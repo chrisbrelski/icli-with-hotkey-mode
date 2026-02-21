@@ -1,4 +1,4 @@
-# icli: IBKR live trade cli
+# icli: IBKR live trade cli (fork with hotkey mode)
 
 `icli` is a command line interface for live trading (or sandbox/paper trading) using IBKR accounts.
 
@@ -331,3 +331,38 @@ so here we are.
 ## Contributions
 
 Feel free to open issues to suggest changes or submit your own PR changes or refactor any existing confusing flows into less coupled components.
+
+## Hotkey Mode
+
+The purpose of this mode is to launch orders as fast as possible as well as scale out of positions as easily as possible.
+The idea is to use simple single keystrokes and use assumed or configured presets.
+
+Configuration settings specific to hotkey mode: 
+```
+ICLI_HOTKEY_MODE_SIZING_CHOICE="amount"
+ICLI_HOTKEY_MODE_SIZING_AMT=1000
+ICLI_HOTKEY_MODE_SIZING_PERCENTAGE=5
+```
+This means that if the sizing choice is "amount", the number of shares used to buy will be as many as required to get as close to $1000 as possible (floor (sizing amount / price)).
+If the sizing choice is "percentage", 5% of the total account value will be used.
+
+Hotkey Mode is implemented as a new command alongside existing commands.
+
+Start hotkey mode with: 
+
+```
+>hotkey_mode
+```
+
+### No Data Subscription: Webull Mode
+
+If there is no API data subscription we use the Unofficial Webull API: 
+https://github.com/tedchou12/webull
+
+This allows using the CLI without an API data subscription.
+
+The feature can be controlled with the environment variable: 
+
+```
+ICLI_NO_DATA_SUB_WEBULL_MODE=False
+```

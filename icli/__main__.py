@@ -19,7 +19,7 @@ if sys.version_info >= (3, 12):
     asyncio.get_event_loop().set_task_factory(asyncio.eager_task_factory)
 
 CONFIG_DEFAULT = dict(
-    ICLI_IBKR_HOST="127.0.0.1", ICLI_IBKR_PORT=4001, ICLI_REFRESH=3.33
+    ICLI_IBKR_HOST="127.0.0.1", ICLI_IBKR_PORT=4001, ICLI_REFRESH=3.33, ICLI_NO_DATA_SUB_WEBULL_MODE=False
 )
 
 # populate config with defaults if they aren't in the environment
@@ -36,11 +36,15 @@ except:
 HOST: str = CONFIG["ICLI_IBKR_HOST"]  # type: ignore
 PORT = int(CONFIG["ICLI_IBKR_PORT"])  # type: ignore
 REFRESH = float(CONFIG["ICLI_REFRESH"])  # type: ignore
-
+ICLI_NO_DATA_SUB_WEBULL_MODE = CONFIG["ICLI_NO_DATA_SUB_WEBULL_MODE"].lower() == "true"  # type: ignore
 
 async def initcli():
     app = cli.IBKRCmdlineApp(
-        accountId=ACCOUNT_ID, toolbarUpdateInterval=REFRESH, host=HOST, port=PORT
+        accountId=ACCOUNT_ID,
+        toolbarUpdateInterval=REFRESH,
+        host=HOST,
+        port=PORT,
+        noDataSubWebullMode=ICLI_NO_DATA_SUB_WEBULL_MODE
     )
 
     await app.setup()

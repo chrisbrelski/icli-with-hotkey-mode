@@ -660,6 +660,9 @@ class IBKRCmdlineApp:
             {"bottom-toolbar": "fg:default bg:default"}
         )
     )
+    noDataSubWebullMode: bool = False
+    webullClient: Any = None
+    hotkeyModeTicker: str = None
 
     opstate: Any = field(init=False)
 

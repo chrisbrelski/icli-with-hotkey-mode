@@ -9,3 +9,11 @@ icli/hist/
 *.json
 *.txt
 poetry.lock
+
+# History files.
+positions-Executed-Positions/
+
+__pycache__/
+
+# Webull unofficial API state.
+did.bin
