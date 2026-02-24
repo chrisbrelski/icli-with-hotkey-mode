@@ -62,6 +62,8 @@ class IOpRID(IOp):
         if self.state.noDataSubWebullMode == True:
             await self.state.webullClient.loginIfNeeded()
 
+        self.DATA_REFRESH_DELAY = 1.33 # For sleep calls: help refresh of position data.
+
         # Keypress wait loop.
         ch = None
         while ch != "q":
@@ -92,13 +94,13 @@ class IOpRID(IOp):
 
                 await self.runoplive("buy", buyArgs)
 
-                await asyncio.sleep(1.33) # Helps refresh of position data.
+                await asyncio.sleep(self.DATA_REFRESH_DELAY) # Helps refresh of position data.
 
                 # Wait for the order to fill to update position reference.
                 openTrades = self.ib.openTrades()
                 logger.info("Buying: Open Trades: {}", openTrades)
                 while len(openTrades) != 0:
-                    await asyncio.sleep(2.0)
+                    await asyncio.sleep(self.DATA_REFRESH_DELAY)
                     openTrades = self.ib.openTrades()
 
             elif ch == "s":
@@ -115,7 +117,7 @@ class IOpRID(IOp):
 
                 await self.launchSellOrder(tickerSymbol, contract, numSharesToSell)
 
-                await asyncio.sleep(1.33) # Helps refresh of position data.
+                await asyncio.sleep(self.DATA_REFRESH_DELAY) # Helps refresh of position data.
 
             elif ch == "d":
                 logger.info("Key: d. Close Position.")
@@ -180,5 +182,5 @@ class IOpRID(IOp):
         openTrades = self.ib.openTrades()
         logger.info("Selling: Open Trades: {}", openTrades)
         while len(openTrades) != 0:
-            await asyncio.sleep(1.0)
+            await asyncio.sleep(self.DATA_REFRESH_DELAY)
             openTrades = self.ib.openTrades()
