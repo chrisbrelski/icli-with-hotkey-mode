@@ -10,6 +10,7 @@ import tty
 import termios
 
 from dataclasses import dataclass
+from datetime import datetime, time
 from typing import TYPE_CHECKING
 
 from loguru import logger
@@ -89,7 +90,7 @@ class IOpRID(IOp):
                 numShares = math.floor(dollarAmount / price)
                 logger.info("Buying {} shares of {}...", numShares, tickerSymbol)
 
-                algo = "LMT"
+                algo = "MKT" if self.isRegularHours() else "LMT"
                 buyArgs = f"{tickerSymbol} {numShares} {algo}"
 
                 await self.runoplive("buy", buyArgs)
@@ -138,8 +139,10 @@ class IOpRID(IOp):
                 contract = contractForName(positions[0][0].symbol)
                 totalQuantity = positions[0][1]
 
+                price = await self.state.webullClient.getQuote(tickerSymbol, refresh=True)
+                logger.info("Selling: Got Webull Quote: {}", price)
                 # Buy command with Negative quantity means Sell.
-                algo = "LMT"
+                algo = "MKT" if self.isRegularHours() else "LMT"
                 numShares = -1 * totalQuantity
                 sellArgs = f"{tickerSymbol} {numShares} {algo}"
 
@@ -184,3 +187,12 @@ class IOpRID(IOp):
         while len(openTrades) != 0:
             await asyncio.sleep(self.DATA_REFRESH_DELAY)
             openTrades = self.ib.openTrades()
+
+    def isRegularHours(self):
+        """
+        Determine if the current time is during Regular Hours or else Pre-Market or After-Hours.
+        """
+
+        now = datetime.now().time()
+
+        return time(9, 30) < now < time(16, 0)
