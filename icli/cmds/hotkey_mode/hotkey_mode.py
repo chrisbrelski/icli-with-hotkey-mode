@@ -88,6 +88,9 @@ class IOpRID(IOp):
                 logger.info("Got Webull Quote: {}", price)
 
                 numShares = math.floor(dollarAmount / price)
+                if numShares < 1:
+                    logger.error("Configured amount too small to buy any shares of {}", tickerSymbol)
+                    continue
                 logger.info("Buying {} shares of {}...", numShares, tickerSymbol)
 
                 algo = "MKT" if self.isRegularHours() else "LMT"
