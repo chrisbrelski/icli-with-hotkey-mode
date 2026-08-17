@@ -366,3 +366,13 @@ The feature can be controlled with the environment variable:
 ```
 ICLI_NO_DATA_SUB_WEBULL_MODE=False
 ```
+
+#### Security Definition Error
+
+Some securities behave differently in terms of the data feed, possibly due to higher than normal volume. The volume and price ticks do not work for the API without an additional subscription. Attempting to buy these may trigger the error:
+
+```
+No security definition has been found for the request
+```
+
+This can be resolved by adding the ticker symbol in the UI in TWS. The security should then be processed without error in `icli`.
