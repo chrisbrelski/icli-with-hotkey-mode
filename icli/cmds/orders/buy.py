@@ -49,6 +49,16 @@ class IOpOrder(IOp):
         # (sometimes we call currentBidAsk() multiple times on a new order,
         #  but we don't want to print the bid/ask output or actually fetch ig
         #  multiple times sequentially if we know it's "good enough" for now).
+
+        # If no API data subscription present, use Webull data via the unofficial API.
+        # Configured in .env.icli using ICLI_NO_DATA_SUB_WEBULL_MODE.
+        if self.state.noDataSubWebullMode == True:
+            logger.info("No API data subscription. Using Webull Data via unofficial API.")
+            webullQuote = await self.state.webullClient.getQuote(contract.symbol)
+            # Not using refresh here as the Hotkey Command will have already called for the quote.
+            logger.info("Buy Command: Got Webull Quote: {}", webullQuote)
+            return (webullQuote, webullQuote)
+
         if time.time() - self.prevBidAskTime < 0.50:
             return self.prevBidAsk
 
